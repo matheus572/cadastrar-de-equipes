@@ -1,0 +1,33 @@
+{
+  "name": "aulaaovivo02ppi",
+  "version": "1.0.0",
+  "description": "Exemplo de implementação e tratamento do método HTTP POST.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RenatoFernandoSilvaGoncalves/AulaAoVivo02PPI.git"
+  },
+  "keywords": [
+    "javascript",
+    "nodejs",
+    "express",
+    "http",
+    "post"
+  ],
+  "author": "Renato Gonçalves",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RenatoFernandoSilvaGoncalves/AulaAoVivo02PPI/issues"
+  },
+  "homepage": "https://github.com/RenatoFernandoSilvaGoncalves/AulaAoVivo02PPI#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2"
+  }
+}
