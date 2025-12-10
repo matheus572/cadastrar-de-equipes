@@ -22,69 +22,7 @@ server.use(session({
 server.use(cookieParser());
 server.use(express.urlencoded({ extended: true }));
 
-function renderPage(conteudo, req, titulo = "LoL Amador League") {
-    const ultimoAcesso = req.cookies.ultimoAcesso || 'Primeiro acesso';
-    
-    return `
-    <!DOCTYPE html>
-    <html lang="pt-BR" data-bs-theme="dark">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${titulo}</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-        <style>
-            body { background-color: #121212; }
-            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
-            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
-        </style>
-    </head>
-    <body class="d-flex flex-column min-vh-100">
-        
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary mb-4 shadow">
-            <div class="container">
-                <a class="navbar-brand text-info" href="/">
-                    <i class="bi bi-controller"></i> LoL Amador
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarMain">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Gestão</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/cadastro-equipe">Cadastrar Equipe</a></li>
-                                <li><a class="dropdown-item" href="/lista-equipes">Listar Equipes</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/cadastro-jogador">Cadastrar Jogador</a></li>
-                                <li><a class="dropdown-item" href="/lista-jogadores">Listar Jogadores</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div class="d-flex align-items-center text-white gap-3">
-                        <small class="text-secondary d-none d-lg-block">
-                            <i class="bi bi-clock-history"></i> ${ultimoAcesso}
-                        </small>
-                        <a href="/logout" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-box-arrow-right"></i> Sair
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
 
-        <main class="container mb-5">
-            ${conteudo}
-        </main>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-    </html>
-    `;
-}
 
 function verificarUsuarioLogado(req, res, next) {
     if (req.session.dadosLogin && req.session.dadosLogin.logado) {
@@ -211,56 +149,87 @@ server.get("/logout", (req, res) => {
 });
 
 server.get("/", verificarUsuarioLogado, (req, res) => {
+    let ultimoAcesso = req.cookies.ultimoAcesso || 'Primeiro acesso';
     res.cookie('ultimoAcesso', new Date().toLocaleString('pt-BR'));
     
-    let conteudo = `
+    res.write(`
         <!DOCTYPE html>
-        <html lang="pt-BR" data-bs-theme="dark">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Login - LoL System</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-        </head>
-        <body class="d-flex align-items-center justify-content-center vh-100 bg-black">
-            <div class="row justify-content-center">
-                <div class="col-md-10 text-center">
-                    <h2 class="lol-header text-info">Painel de Controle</h2>
-                    <div class="row g-4 mt-3">
-                        <div class="col-md-6">
-                            <div class="card h-100 border-success">
-                                <div class="card-body">
-                                    <h5 class="card-title text-success"><i class="bi bi-people-fill"></i> Equipes</h5>
-                                    <p class="card-text text-secondary">Gerencie os times do campeonato.</p>
-                                    <a href="/cadastro-equipe" class="btn btn-outline-success w-100 mb-2">Cadastrar Nova</a>
-                                    <a href="/lista-equipes" class="btn btn-outline-light w-100">Listar Equipes</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card h-100 border-primary">
-                                <div class="card-body">
-                                    <h5 class="card-title text-primary"><i class="bi bi-person-video-game"></i> Jogadores</h5>
-                                    <p class="card-text text-secondary">Gerencie os players e suas posições.</p>
-                                    <a href="/cadastro-jogador" class="btn btn-outline-primary w-100 mb-2">Cadastrar Novo</a>
-                                    <a href="/lista-jogadores" class="btn btn-outline-light w-100">Listar Jogadores</a>
-                                </div>
-                            </div>
-                        </div>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
+        
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary mb-4 shadow">
+            <div class="container">
+                <a class="navbar-brand text-info" href="/">
+                    <i class="bi bi-controller"></i> LoL Amador
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Gestão</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/cadastro-equipe">Cadastrar Equipe</a></li>
+                                <li><a class="dropdown-item" href="/lista-equipes">Listar Equipes</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/cadastro-jogador">Cadastrar Jogador</a></li>
+                                <li><a class="dropdown-item" href="/lista-jogadores">Listar Jogadores</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center text-white gap-3">
+                        <small class="text-secondary d-none d-lg-block">
+                            <i class="bi bi-clock-history"></i> ${ultimoAcesso}
+                        </small>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Sair
+                        </a>
                     </div>
                 </div>
             </div>
-        </body>
-        </html>        
-    `;
+        </nav>
 
-    res.send(renderPage(conteudo, req));
+        
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+
+        `);
+        res.end();
 });
 
 
 server.get("/cadastro-equipe", verificarUsuarioLogado, (req, res) => {
-    let conteudo = `
+    res.send(`<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card border-success">
@@ -290,14 +259,30 @@ server.get("/cadastro-equipe", verificarUsuarioLogado, (req, res) => {
                 </div>
             </div>
         </div>
-    `;
-    res.send(renderPage(conteudo, req));
+        </body>
+    </html>
+    `);
 });
 
 server.post('/cadastro-equipe', verificarUsuarioLogado, (req, res) => {
     const { nome, capitao, contato } = req.body;
     if (!nome || !capitao || !contato){
-        let conteudo = `<div class="row justify-content-center">
+        res.send(`<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
+            <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card border-success">
                     <div class="card-header bg-success text-white fw-bold">
@@ -329,8 +314,9 @@ server.post('/cadastro-equipe', verificarUsuarioLogado, (req, res) => {
                     </div>
                 </div>
             </div>
-        </div>`;
-        res.send(renderPage(conteudo, req));
+        </div>
+        </body>
+    </html>`);
         return;
     }
     
@@ -339,7 +325,22 @@ server.post('/cadastro-equipe', verificarUsuarioLogado, (req, res) => {
 });
 
 server.get("/lista-equipes", verificarUsuarioLogado, (req, res) => {
-    let conteudo = `
+    res.setHeader("Content-Type", "text/html");
+    let conteudo = `<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8">
@@ -374,9 +375,11 @@ server.get("/lista-equipes", verificarUsuarioLogado, (req, res) => {
                 </div>
             </div>
         </div>
+        </body>
+    </html>
     `;
 
-    res.send(renderPage(conteudo, req));
+    res.send(conteudo);
 });
 
 
@@ -390,7 +393,21 @@ server.get("/cadastro-jogador", verificarUsuarioLogado, (req, res) => {
         }
     }
 
-    let conteudo = `
+    res.send(`<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card border-primary">
@@ -443,8 +460,9 @@ server.get("/cadastro-jogador", verificarUsuarioLogado, (req, res) => {
                 </div>
             </div>
         </div>
-    `;
-    res.send(renderPage(conteudo, req));
+        </body>
+    </html>
+    `);
 });
 
 server.post("/cadastro-jogador", verificarUsuarioLogado, (req, res) => {
@@ -462,7 +480,21 @@ server.post("/cadastro-jogador", verificarUsuarioLogado, (req, res) => {
             }
         }
 
-        let conteudo = `
+        res.send(`<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card border-primary">
@@ -522,15 +554,100 @@ server.post("/cadastro-jogador", verificarUsuarioLogado, (req, res) => {
                     </div>
                 </div>
             </div>
-        </div>`;
-        
-        res.send(renderPage(conteudo, req));
+        </div>
+        </body>
+    </html>`);
         return;
     }
     
     const qtd = jogadores.filter(j => j.equipe === equipe).length;
     if (qtd >= 5) {
-        return res.redirect('/lista-jogadores?erro=EquipeCheia'); 
+        let options = '';
+    if (equipes.length === 0) {
+        options = `<option value="" disabled selected>⚠️ Cadastre uma equipe antes!</option>`;
+    } else {
+        for (let i = 0; i < equipes.length; i++) {
+            options += `<option value="${equipes[i].nome}">${equipes[i].nome}</option>`;
+        }
+    }
+        res.send(`<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        <i class="bi bi-person-plus-fill"></i> Novo Jogador
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            <div>Equipe já possui 5 jogadores cadastrados</div>
+                        </div>
+
+                        <form action="/cadastro-jogador" method="POST" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nome Completo</label>
+                                <input type="text" name="nome" class="form-control" value="${nome || ''}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nickname (In-Game)</label>
+                                <input type="text" name="nickname" class="form-control" value="${nickname || ''}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Função (Role)</label>
+                                <select name="funcao" class="form-select">
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Top" ${funcao === 'Top' ? 'selected' : ''}>Top Laner</option>
+                                    <option value="Jungle" ${funcao === 'Jungle' ? 'selected' : ''}>Jungler</option>
+                                    <option value="Mid" ${funcao === 'Mid' ? 'selected' : ''}>Mid Laner</option>
+                                    <option value="Atirador" ${funcao === 'Atirador' ? 'selected' : ''}>ADC</option>
+                                    <option value="Suporte" ${funcao === 'Suporte' ? 'selected' : ''}>Suporte</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Elo</label>
+                                <select name="elo" class="form-select">
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Ferro" ${elo === 'Ferro' ? 'selected' : ''}>Ferro</option>
+                                    <option value="Bronze" ${elo === 'Bronze' ? 'selected' : ''}>Bronze</option>
+                                    <option value="Prata" ${elo === 'Prata' ? 'selected' : ''}>Prata</option>
+                                    <option value="Ouro" ${elo === 'Ouro' ? 'selected' : ''}>Ouro</option>
+                                    <option value="Platina" ${elo === 'Platina' ? 'selected' : ''}>Platina</option>
+                                    <option value="Diamante+" ${elo === 'Diamante+' ? 'selected' : ''}>Diamante+</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Equipe</label>
+                                <select name="equipe" class="form-select border-warning text-warning fw-bold">
+                                    ${options}
+                                </select>
+                            </div>
+                            <div class="col-12 d-flex gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary flex-grow-1">Cadastrar</button>
+                                <a href="/" class="btn btn-secondary">Voltar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </body>
+    </html>`);
+        return;
     }
 
     jogadores.push({ nome, nickname, funcao, elo, equipe });
@@ -538,9 +655,23 @@ server.post("/cadastro-jogador", verificarUsuarioLogado, (req, res) => {
 });
 
 server.get("/lista-jogadores", verificarUsuarioLogado, (req, res) => {
-    let conteudo = `
+    let conteudo = `<!DOCTYPE html>
+    <html lang="pt-BR" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lol Amador</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <style>
+            body { background-color: #121212; }
+            .lol-header { border-bottom: 2px solid #0dcaf0; margin-bottom: 20px; padding-bottom: 10px; }
+            .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        </style>
+    </head>
+    <body class="d-flex flex-column min-vh-100">
         <div class="container">
-            <h2 class="lol-header text-primary text-center mb-4">Elenco</h2>
+            <h2 class="lol-header text-primary text-center mb-4">Jogadores Cadastradas</h2>
     `;
 
     if (equipes.length === 0) {
@@ -596,9 +727,11 @@ server.get("/lista-jogadores", verificarUsuarioLogado, (req, res) => {
                 <a href="/" class="btn btn-secondary">Voltar</a>
             </div>
         </div>
+        </body>
+    </html>
     `;
 
-    res.send(renderPage(conteudo, req));;
+    res.send(conteudo);
 });
 server.listen(porta, host, () => {
     console.log(`Servidor rodando em http://${host}:${porta}`);
